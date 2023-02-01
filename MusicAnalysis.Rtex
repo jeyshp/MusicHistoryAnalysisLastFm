@@ -1,0 +1,584 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\pagenumbering{arabic}
+\setlength\parindent{0pt}
+
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=blue,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+\urlstyle{same}
+
+\begin{document}
+
+\begin{titlepage}
+   \begin{center}
+       \vspace*{1cm}
+
+       \textbf{\Large STAT 344 Project}
+
+       \vspace{0.5cm}
+        Last.FM Music Listening Histories Analysis
+
+       \vspace{1.5cm}
+
+        %Need to choose team leader
+
+       \textbf{Jeyshinee Pyneeandee}    \\
+       Student Number: 49802283             \\
+       Role: Coding & Written Portion
+
+       \vspace{0.5cm}
+       \textbf{Vridhi Gupta (Leader)}        \\
+       Student Number:  17777780            \\
+       Role: Written Portion and Coding
+
+       \vspace{0.5cm}
+       \textbf{Sarah Masri}         \\
+       Student Number: 97415681         \\
+       Role: Coding and Analysis
+
+
+
+       \vspace{0.5cm}
+       \textbf{Erina Miyatsu}       \\
+       Student Number: 51410603              \\
+       Role: Part 2 and Support
+
+       \vfill
+
+       Due November 13, 2022
+
+       \vspace{0.8cm}
+
+
+
+       STAT 344\\
+       Professor Lang Wu\\
+       University of British Columbia\\
+
+   \end{center}
+\end{titlepage}
+
+
+
+\tableofcontents
+
+
+
+\pagebreak
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+%Clearly state the objectives, background, and why the problem is important or of interest.
+
+The music industry is booming with music streaming platforms such as Spotify and Apple Music boasting a total number of 165 million and 88 million subscribers as of 2021, respectively. \\
+
+This suggests that music plays a massive part in people's lives. In fact, according to Spotify Wrapped, our group collectively spent 900 hours listening to music in the past year itself. Onepoll data even shows that 83\% of surveyed people look forward to their Spotify Wrapped: a marketing campaign by Spotify that lets their users view their activity on the platform for the past year. \\
+
+This intrigued us into exploring more about the music listening habits and brainstorming how these music streaming platforms could design better marketing strategies and target advertisements (for lack of better word), such as Spotify Wrapped to appropriate audiences, given enough statistical evidence.\\
+
+Hence, in this report, we will be analyzing the music listening histories of the global platform - Last.fm. We will be using the Music Listening Histories Dataset (MLHD) which is a large-scale collection of music listening events assembled from more than 27 billion time-stamped logs extracted from Last.fm. We aim to analyze the average play count i.e. the average number of logs within each user’s music listening history and the proportion of people having a play count over $x=\bar{y}_{s,str}$.
+\section*{Sampling}
+\addcontentsline{toc}{section}{Sampling}
+%Clearly describe how and where the samples are obtained (e.g., how you obtain a SRS, how you choose strata, how you determine the sample sizes, etc), what is the targeted population (e.g., all science books in UBC Koerner Library), and the parameters of interest. Please consider two different types of population, such as one being continuous (e.g., number of pages of a book) and one being binary (e.g., whether the book is over 200 pages or not), based on the same samples.
+
+The dataset is an outcome of an observational study and consists of 10 columns.
+We are, however, only concerned with age, gender, and playcount and hence extracted these columns.
+\\
+\\
+Since each row accounts for one log, our population size is
+$\mathbb{N} = 582,703$. \\
+Our target population is the listeners from the music streaming platform: Last.fm.
+\\
+\\
+We chose our sample size to be $\mathbb{n} = 500$.
+\\
+\\
+Since $\frac{n}{N}\approx0.0008< 0.5$ and we have a  large population, it was safe for us to ignore the Finite Population Correction Factor (FPC).\\
+
+We estimate two parameters:
+\begin{enumerate}
+\item $\mu$ (also, $\bar{y}_p$) \text{: average playcount per user}
+
+\item $\mathbb{p}$: proportion of people with playcount greater than $x=\bar{y}_{s,str}$
+\end{enumerate}
+
+
+To carry out our analysis for the binary parameter, an additional column was added to our sample data to binarize the people whose playcount was greater than x (the estimate of the mean playcount calculated using stratified sampling with optimal allocation). We chose this as binary parameter because, this quantifies the people who are avid listeners and have a playcount grater than the average.
+\\
+\\
+We chose to apply two sampling methods: Simple Random Sampling(SRS) and Stratified Sampling for our analysis.
+\begin{enumerate}
+\item SRS: A simple random sample of size n=500 was taken without replacement from the entire population of data.
+\item Stratified:  We stratified the data by gender i.e. we have three strata in total for female, male, non-binary. From a marketing perspective, we believe that advertisements could be better catered for by gender.
+\end{enumerate}
+
+From each sample, we will calculate both $\mu$ and p. \\
+The strata sizes ($N_h$) and within strata variance ($s_h^2$) for each gender is a follows:\\
+\begin{center}
+\begin{tabular}{ |c|c|c| }
+ \hline
+        & $N_h$ & $s_h^2$\\
+ \hline
+ Female & 136299 & 1,179,258,007 \\
+ Male & 339234 & 2,089,783,916 \\
+ Non-binary & 107170 & 1,617,478,690 \\
+  \hline
+\end{tabular}
+\end{center}
+
+Since, the within strata variances are not equal, proportional allocation may not be the best choice for selection of sample sizes.
+However, assuming the cost of sampling to be that same across the strata, we use optimal allocation with sample size  $n_h$ for each strata ($h=1,2,3$) to be $\frac{\frac{N_h}{N}*s_h}{\sum_{h=1}^{h=3} N_h*s_h}*n$.
+So, the optimal sample sizes are 95, 315, and 90 for the female, male, and non-binary strata respectively.
+
+%Maybe add for prop allocation
+
+\section*{Analysis and Results}
+\addcontentsline{toc}{section}{Analysis and Results}
+
+
+\subsection*{Estimating Continuous parameter}
+
+We first estimate the continuous parameter ($\bar{y}_p$) and its standard error using \textbf{Simple Random Sampling}. As mentioned above, we ignore the Finite population correction factor. Moreover, all the estimates calculated for stratified sampling use optimal sample sizes.
+$$\hat{\bar{y}}_p= \bar{y}_s=\textbf{48027.736}$$
+$$se(\bar{y}_s)=\sqrt{\frac{{s_s}^2}{n}}=\textbf{2029.587}$$
+
+Now, we estimate the continuous parameter using \textbf{stratified sampling} with optimal allocation.
+$$\hat{\bar{y}}_p= {\bar{y}_{str}}= {\sum_{h=1}^{h=3}\Big (\frac{N_h}{N}\Big )}{\bar{y}_{s_h}}= \textbf{46283.50}$$
+$$se({\bar{y}_{str}})=\sqrt{{\sum_{h=1}^{h=3} \Big (\frac{N_h}{N} \Big )^2}\frac{{s_{s_h}}^2}{n_h}}=\textbf{1758.16}$$
+
+
+
+
+
+\vspace{5mm}
+\subsection*{Estimating Binary parameter}
+
+Now, we estimate the binary parameter and its standard error using\textbf{ simple random sampling}. In the following section, we use the binarized column (i.e. high.playcount) to estimate the proportions and their standard error. Hence, ${\bar{y}_s}$ represents the mean of this new column.
+$$\hat{p}=\bar{y}_s=\textbf{0.360}$$
+$$se(\hat{p})= \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}=\textbf{0.021}$$
+
+Moving on to \textbf{stratified sampling},\\\\
+First, we estimate $\bar{y}_{s_h}$ by calculating the sample mean of the binary column for each stratum i.e. ${\hat{p}_{str,h}}$. Using this, we calculate the estimate for the population proportion.
+$$\hat{p}={\bar{y}_{str}}={\sum_{h=1}^{h=3}(\frac{N_h}{N})}{\hat{p}_{str,h}}=\textbf{0.340}$$
+$$se(\hat{p})= se({\bar{y}_{str}})=\sqrt{{\sum_{h=1}^{h=3}({\frac{N_h}{N})}^2}\frac{\hat{p}_{str,h}(1-\hat{p}_{str,h})}{n_h}}=\textbf{0.021}$$
+
+
+\vspace{5mm}
+\subsection*{Computing Confidence Intervals}
+
+We compute four distinct 95\% confidence intervals for the population estimates of our continuous and binary parameters. We use:
+$$
+CI = \hat \theta \pm 1.96\,  \text{sd}(\hat \theta)\, / \sqrt{n}
+$$
+where $\hat \theta$ is our parameter of interest.
+\\
+\\
+This yields the following results:
+\\
+\\
+For the estimate of our population mean:
+\begin{center}
+\begin{tabular}{ |c|c|c| }
+ \hline
+        & Lower Bound & Upper Bound\\
+ \hline
+ SRS &  47727.59    &   48030.04   \\
+  Stratified Sampling &  46144.94&   46439.09 \\
+  \hline
+\end{tabular}
+\end{center}\\
+
+
+For the estimate of our population proportion:
+\begin{center}
+\begin{tabular}{ |c|c|c| }
+ \hline
+        & Lower Bound & Upper Bound\\
+ \hline
+ SRS &  0.3581184   & 0.3618816  \\
+  Stratified Sampling&   0.3384809  & 0.3422123 \\
+  \hline
+\end{tabular}
+\end{center}
+
+
+
+
+
+
+
+\vspace{5mm}
+\subsection*{Summarizing the results}
+
+
+
+For Continuous Parameter
+\begin{center}
+\begin{tabular}{ |c|c|c| }
+ \hline
+        & Mean & Standard Error\\
+ \hline
+ SRS & 48027.74 & 2029.587 \\
+ Stratified Sampling & 46283.50 & 1758.160 \\
+  \hline
+\end{tabular}
+\end{center}\\
+
+\\\\
+
+For Binary Parameter
+\begin{center}
+\begin{tabular}{ |c|c|c| }
+ \hline
+        & Mean & Standard Error\\
+ \hline
+ SRS & 0.36 & 0.021 \\
+ Stratified Sampling & 0.34 & 0.021 \\
+  \hline
+\end{tabular}
+\end{center}\\
+\\\\
+
+
+
+For 95\% confidence intervals
+\begin{center}
+\begin{tabular}{ |c|c|c| }
+ \hline
+        & Lower Bound & Upper Bound\\
+ \hline
+ SRS continuous &  47849.83 & 48205.64   \\
+  Stratified Sampling continuous &  46129.39 & 46437.61 \\
+  SRS binary &  0.3581184   & 0.3618816  \\
+  Stratified Sampling binary&   0.3384809  & 0.3422123 \\
+  \hline
+\end{tabular}
+\end{center}\\
+
+
+
+%In data analysis, please show estimates, standard errors, and confidence intervals. Please interpret the results, and state any assumptions you have made. Discuss advantages and disadvantages of different methods being used.
+
+
+
+
+\section*{Conclusion/Interpretations and Limitations}
+\addcontentsline{toc}{section}{Conclusion/Interpretations and Limitations}
+
+As seen above, our estimates for the continuous parameter $\mu$ are 48028 from Simple random sampling and 46284 from stratified sampling (rounded) with the estimate from stratified sampling method resulting in a smaller standard error.
+\\
+\\
+However, when estimating our binary parameter p, both techniques performed similarly and resulted with the same standard error, with their estimates not varying much either.
+\\
+\\
+It is to be noted that the widths in the 95\% confidence intervals for the stratified sample is tighter than that of the simple random sample for both our continuous and binary parameters. Notably, the confidence interval from the stratified sample in our continuous parameter is approximately 13.3\% tighter than the analogous interval from the simple random sample since
+$$
+1 - \frac{46437.61 - 46129.39}{48205.64 -47849.83 } = 0.1337512
+$$
+Similarly, for Binary parameter, the confidence interval for stratified sampling is tighter as seen as:\\
+$$
+1 - \frac{0.3422123-0.3384809}{0.3618816-0.3581184} = 0.008450255\\
+$$
+It is hence safe to conclude that for these estimates, stratified sampling with optimal allocation is a better method of sampling.
+\\
+\\
+From a corporate point of view, Last.fm may be interested to know these parameters to assess the loyalty of their users. It is our recommendation that a stratified sampling method will yield better, more informative results, than a simple random sample. We conclude with 95\% confidence that the population mean of playcount for Last.fm users is between 46129.39 and 46437.61. With this information, the organization may determine if this estimate is satisfactory with respect to their user playcounts target. If this result is concerning (too low), Last.fm may consider a variety of methods to meet their target (improve user experience, targeted advertisements, discounts, etc.).
+
+\begin{itemize}
+    \item A limitation of our report is that people can listen to music using last.fm without logging in which means this might not be the most accurate representation of the whole population.
+    \item There were also some age discrepancies that we have noted and removed from the data.
+    \item Moreover, we have used the population data to calculate the within strata variances. The actual variances were then treated as 'guessed' variances for the calculation of optimal sample size.
+    \item Lastly, Last.fm is not the most popular music streaming platform which may affect the results of our analysis. Hence, we may not be extremely accurate in generalizing our results to other populations i.e. for platforms like 'Spotify' and 'Apple Music'.
+
+\end{itemize}
+
+
+\newpage
+\section*{Part II}
+\addcontentsline{toc}{section}{Part II}
+
+
+In the paper by Perlman and Wu, a traditional hypothesis testing method, likelihood ratio tests (LRT), was doubted for its deficits in the statistical criteria. As a "superior" method, a new statistical test was proposed as it seemed to have an unbiased procedure and a precise mathematical calculation. The authors, however, argued otherwise; the new method is flawed and counter-intuitive. They especially emphasized that a statistical method that proves the hypothesis mathematically well is not necessarily great in proving the plausibility of the hypothesis itself. In other words, even though a statistical way shows mathematical validity, it does not guarantee the validity of the hypothesis itself. Rather, it is the interpretation of mathematics that is important. A statistical method used to test a new hypothesis may be preferred if it correctly rejects the opposing hypothesis when the proposed hypothesis is true or calculates the possibility of the hypothesis without any biases. However, perfect mathematical calculation is not all about proving a new hypothesis because that may be against the statistical intuitions and lead to undesirable procedures, making an inappropriate inference about the hypothesis. The hypothesis testing method should be utilized to generate the data by which statisticians interpret the plausibility of the hypothesis rather than judging directly based on the mathematical data. Therefore, optimizing the numerical aspect of the method does not necessarily make the method appropriate to be used for testing a hypothesis.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\pagebreak
+\section*{Appendix}
+\addcontentsline{toc}{section}{Appendix}
+
+\subsection*{Code: Sample Data}
+
+Download the data \href{https://ddmal.music.mcgill.ca/research/The_Music_Listening_Histories_Dataset_(MLHD)/}{here}.
+\\
+\\
+To load and sample our data use:
+
+\begin{verbatim}
+library(readr)
+library(tidyverse)
+library(dplyr)
+
+data <- read.csv("MLHD_demographics.csv", sep="\t", header=T)
+        %>% drop_na(playcount, gender)
+ print(head(data))
+                                  uuid age country gender playcount
+1 dfb7ea9d-6e4f-48e4-96f6-59abcc207d55  30      AT      n     42622
+2 a89cb9c5-ba84-424e-8950-16657bb6f7af  35      US      m    182118
+3 dde6c339-c256-43f1-94e8-02f4043abdf9  35      UK      m     40668
+4 44d70878-6e9a-432f-831d-179e8354f448  40      DK      n     74916
+5 e553ab79-5e93-48fc-aa63-1c4319cafd23  NA      SE      n     49383
+6 cdcb50f8-da8e-4ec5-9623-b06f5e464ffb  34      FR      m     93689
+
+  age_scrobbles user_type registered firstscrobble lastscrobble
+1          3783      user 1035849600    1138630578   1362652343
+2          3862  subscrib 1035849600    1130274207   1369498564
+3          3727      user 1035849600    1108340306   1357866969
+4          3874      user 1035849600    1368342035   1126011087
+5          3730      user 1035849600    1189263203   1357317882
+6          3831      user 1035849600    1191435539   1366830084
+
+# Set seed for replication
+set.seed(0)
+
+\end{verbatim}
+
+\subsection*{Code: Sample Data}
+\begin{verbatim}
+attach(data)
+N.h <- tapply(playcount, gender, length)   #population size for different genders
+genders <- names(N.h) # name of the genders
+N <- sum(N.h)  # population size  is 582703
+detach(data)
+
+
+print(N.h)
+##      f      m      n
+## 136299 339234 107170
+
+n <- 500  # total sample size
+
+#n/N =  0.0008580701 < 0.5 so we ignore FPFC
+
+#Creating samples
+# SRS
+SRS.indices <- sample.int(N,  n, replace = F)
+SRS.sample <- data[SRS.indices , ]
+
+#Within strata variance for each strata
+var.h.p <- tapply(data$playcount, data$gender, var)
+
+#f          m          n
+#1179258007 2089783916 1617478690
+#Variances are not the same hence we are inclined towards using optimal allocation
+
+# Stratified Sample using Proportional Allocation
+n.h.prop <- round((N.h/N) * n)
+
+#f    m   n
+#117 291  92
+
+STR.sample.prop <- NULL
+for (i in 1:length(genders)) {
+  row.indices <- which(data$gender == genders[i])
+  sample.indices <- sample(row.indices, n.h.prop[i], replace = F)
+  STR.sample.prop <- rbind(STR.sample.prop, data[sample.indices, ])
+}
+
+#Stratified Sample using Optimal Allocation
+s.pop <- tapply(data$playcount, data$gender, sd)
+s1=s.pop[1]
+s2=s.pop[2]
+s3=s.pop[3]
+prop=(N.h/N)
+optimal.prop= c((N.h[1]*s1)/(N.h[1]*s1+N.h[2]*s2+N.h[3]*s3),
+                (N.h[2]*s2)/(N.h[1]*s1+N.h[2]*s2+N.h[3]*s3),
+                (N.h[3]*s3)/(N.h[1]*s1+N.h[2]*s2+N.h[3]*s3))
+n.h.opt=round(optimal.prop,2)*n
+
+#f   m   n
+#95 315  90
+
+STR.sample.opt <- NULL
+for (i in 1:length(genders)) {
+  row.indices <- which(data$gender == genders[i])
+  sample.indices <- sample(row.indices, n.h.opt[i], replace = F)
+  STR.sample.opt <- rbind(STR.sample.opt, data[sample.indices, ])
+}
+\end{verbatim}
+
+
+\subsection*{Code: Continuous Parameter Estimation}
+\begin{verbatim}
+
+# Estimate population mean using SRS
+ybar.srs <- mean(SRS.sample$playcount)
+cts.se.srs <- sqrt(var(SRS.sample$playcount)/n) #FPC not needed
+cts.srs <- c(ybar.srs, cts.se.srs)
+
+print(cts.srs)
+## [1] 48027.736  2029.587
+
+# Estimate population mean using Stratified Sample
+#optimal
+ybar.h.opt <- tapply(STR.sample.opt$playcount, STR.sample.opt$gender, mean)
+var.h.opt <- tapply(STR.sample.opt$playcount, STR.sample.opt$gender, var)
+se.h.opt <- sqrt(var.h.opt / n.h.opt)     #FPC not needed
+
+ybar.str.opt <- sum((N.h / N) * ybar.h.opt)
+cts.se.str.opt <- sqrt(sum((N.h / N)^2 * se.h.opt^2))
+cts.str.opt <- c(ybar.str.opt, cts.se.str.opt)
+
+print(cts.str.opt)
+#[1] 46283.50  1758.16
+
+cts.results.opt <- rbind.data.frame(cts.srs, cts.str.opt)
+colnames(cts.results.opt) <- c("mean", "se")
+rownames(cts.results.opt) <- c("srs", "str.opt")
+
+print(cts.results.opt)
+#Results with optimal allocation
+#           mean       se
+#srs     48027.74 2029.587
+#str.opt 46283.50 1758.160
+
+#se for stratified is smaller than SRS for both cases.
+
+\end{verbatim}
+
+
+\subsection*{Code: Binary Parameter Estimation}
+\begin{verbatim}
+prop_se <- function(p, n) {
+  var <- p * (1-p) / n
+  return(sqrt(var))
+}
+
+
+tol.playcount <- ybar.str.opt
+
+# Binarize samples
+SRS.sample$high.playcount <- ifelse(SRS.sample$playcount > tol.playcount, 1, 0)
+#for proportional
+STR.sample.prop$high.playcount <- ifelse(STR.sample.prop$playcount > tol.playcount, 1, 0)
+#for optimal
+STR.sample.opt$high.playcount <- ifelse(STR.sample.opt$playcount > tol.playcount, 1, 0)
+
+
+# Estimate proportion using SRS
+phat.srs <- mean(SRS.sample$high.playcount)
+bin.se.srs <- prop_se(phat.srs, n)
+bin.srs <- c(phat.srs, bin.se.srs)
+
+print(round(bin.srs,3))
+## [1] 0.360 0.021
+
+
+# Estimate proportion using Stratified Sample with optimal allocations
+phat.h.opt <- tapply(STR.sample.opt$high.playcount, STR.sample.opt$gender, mean)
+bin.se.h.opt <- c()
+for(i in 1:length(genders)){
+  se <- prop_se(phat.h.opt[i], n.h.opt[i])
+  bin.se.h.opt <- c(bin.se.h.opt, se)
+}
+
+
+phat.str.opt <- sum(N.h / N * phat.h.opt)
+bin.se.str.opt <- sqrt(sum((N.h / N)^2 * bin.se.h.opt^2))
+bin.str.opt <- c(phat.str.opt, bin.se.str.opt)
+
+print(round(bin.str.opt,3))
+# [1] 0.340 0.021
+
+#Using optimal allocation
+bin.results.opt <- rbind.data.frame(bin.srs, bin.str.opt)
+colnames(bin.results.opt) <- c("proportion", "se")
+rownames(bin.results.opt) <- c("srs", "str.opt")
+
+print(round(bin.results.opt,3))
+
+##        proportion    se
+#srs           0.36   0.021
+#str.opt       0.34   0.021
+
+#se is same for both SRS and Stratified
+\end{verbatim}
+
+
+
+\subsection*{Code: Confidence Intervals}
+\begin{verbatim}
+# 95% CI for population mean:
+
+# SRS
+cts.CI.srs <- c(ybar.srs - 1.96 * cts.se.srs / sqrt(n),
+                ybar.srs + 1.96 * cts.se.srs / sqrt(n))
+
+# Stratified - optimal
+cts.CI.opt <- c(ybar.str.opt - 1.96 * cts.se.str.opt / sqrt(n),
+                ybar.str.opt + 1.96 * cts.se.str.opt / sqrt(n))
+
+cts.CI <- rbind.data.frame(cts.CI.srs, cts.CI.prop, cts.CI.prop)
+colnames(cts.CI) <- c("LB", "UB")
+rownames(cts.CI) <- c("srs", "str.opt")
+
+print(cts.CI)
+##             LB       UB
+## srs      47849.83 48205.64
+## str.opt  46129.39 46437.61
+
+
+
+
+# 95% CI for population proportion:
+
+# SRS
+bin.CI.srs <- c(phat.srs - 1.96 * bin.se.srs / sqrt(n),
+                phat.srs + 1.96 * bin.se.srs / sqrt(n))
+# Stratified - proportional
+bin.CI.prop <- c(phat.str.prop - 1.96 * bin.se.str.prop / sqrt(n),
+                 phat.str.prop + 1.96 * bin.se.str.prop / sqrt(n))
+# Stratified - optimal
+bin.CI.opt <- c(phat.str.opt - 1.96 * bin.se.str.opt / sqrt(n),
+                phat.str.opt + 1.96 * bin.se.str.opt / sqrt(n))
+bin.CI <- rbind.data.frame(bin.CI.srs, bin.CI.prop, bin.CI.opt)
+colnames(bin.CI) <- c("LB", "UB")
+rownames(bin.CI) <- c("srs", "str.opt")
+
+print(bin.CI)
+## LB        UB
+## srs      0.3581184 0.3618816
+## str.opt  0.3384809 0.3422123
+\end{verbatim}
+\end{document}
